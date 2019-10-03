@@ -86,32 +86,36 @@ export let runSnapToRoad = function(path) {
     .get("https://roads.googleapis.com/v1/snapToRoads", {
       params
     })
-    .then(function({ data }) {
-      processSnapToRoadResponse(data);
+    .then(function({ data: snappedPoints }) {
+      processSnapToRoadResponse(snappedPoints);
       drawSnappedPolyline();
     });
 };
 
 // Store snapped polyline returned by the snap-to-road service.
-export let processSnapToRoadResponse = function(data) {
+export let processSnapToRoadResponse = function(snappedPoints) {
   snappedCoordinates = [];
+  debugger;
   placeIdArray = [];
-  for (let i = 0; i < data.snappedPoints.length; i++) {
+  for (let i = 0; i < snappedPoints.length; i++) {
     let latlng = new google.maps.LatLng(
-      data.snappedPoints[i].location.latitude,
-      data.snappedPoints[i].location.longitude
+      snappedPoints[i].location.latitude,
+      snappedPoints[i].location.longitude
     );
     snappedCoordinates.push(latlng);
-    placeIdArray.push(data.snappedPoints[i].placeId);
+    placeIdArray.push(snappedPoints[i].placeId);
   }
 };
 
 // Draws the snapped polyline (after processing snap-to-road response).
-export let drawSnappedPolyline = function() {
+export let drawSnappedPolyline = function(
+  strokeColor = "black",
+  strokeWeight = 3
+) {
   let snappedPolyline = new google.maps.Polyline({
     path: snappedCoordinates,
-    strokeColor: "black",
-    strokeWeight: 3
+    strokeColor,
+    strokeWeight
   });
   //snappedPolyline.click
 

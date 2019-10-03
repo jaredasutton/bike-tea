@@ -1,0 +1,29 @@
+const { retrieveById, retrieveAllForUserId } = require("../models/PathMap.js");
+
+const getOneById = (req, res) => {
+  let { _id } = req.params;
+  if (_id === undefined) {
+    return res.status(404);
+  }
+  retrieveById(_id)
+    .then(res.status(200).send)
+    .catch(err => {
+      console.error(err);
+      res.status(504).send("Error retrieving map with that ID.");
+    });
+};
+
+const getAllForUserId = (req, res) => {
+  let { userId } = req.query;
+  if (userId === undefined) {
+    return res.status(404);
+  }
+  retrieveAllForUserId(userId)
+    .then(res.status(200).send)
+    .catch(err => {
+      console.error(err);
+      res.status(504).send("Error retrieving maps for that user ID.");
+    });
+};
+
+module.exports = { getOneById, getAllForUserId };
