@@ -4,5 +4,13 @@ module.exports = new Schema({
   name: String,
   userId: Number,
   private: Boolean,
-  paths: [{ snappedPoints: [], strokeColor: String, strokeWeight: Number }]
+  zoom: { type: Number, default: 12 },
+  paths: [
+    {
+      description: String,
+      snappedPoints: [],
+      strokeColor: String,
+      strokeWeight: Number
+    }
+  ]
 });

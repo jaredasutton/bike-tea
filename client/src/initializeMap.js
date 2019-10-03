@@ -1,7 +1,6 @@
 import axios from "axios";
 import apiKey from "../../config.js";
 let map;
-let drawingManager;
 let placeIdArray = [];
 let polylines = [];
 let snappedCoordinates = [];
@@ -20,23 +19,23 @@ export let initializeMap = function() {
   map.controls[google.maps.ControlPosition.RIGHT_TOP].push(
     document.getElementById("bar")
   );
-  let autocomplete = new google.maps.places.Autocomplete(
-    document.getElementById("autoc")
-  );
-  autocomplete.bindTo("bounds", map);
-  autocomplete.addListener("place_changed", function() {
-    let place = autocomplete.getPlace();
-    if (place.geometry.viewport) {
-      map.fitBounds(place.geometry.viewport);
-    } else {
-      map.setCenter(place.geometry.location);
-      map.setZoom(17);
-    }
-  });
+  // let autocomplete = new google.maps.places.Autocomplete(
+  //   document.getElementById("autoc")
+  // );
+  // autocomplete.bindTo("bounds", map);
+  // autocomplete.addListener("place_changed", function() {
+  //   let place = autocomplete.getPlace();
+  //   if (place.geometry.viewport) {
+  //     map.fitBounds(place.geometry.viewport);
+  //   } else {
+  //     map.setCenter(place.geometry.location);
+  //     map.setZoom(17);
+  //   }
+  // });
 
   // Enables the polyline drawing control. Click on the map to start drawing a
   // polyline. Each click will add a new vertice. Double-click to stop drawing.
-  drawingManager = new google.maps.drawing.DrawingManager({
+  let drawingManager = new google.maps.drawing.DrawingManager({
     drawingMode: google.maps.drawing.OverlayType.POLYLINE,
     drawingControl: true,
     drawingControlOptions: {
@@ -86,7 +85,7 @@ export let runSnapToRoad = function(path) {
     .get("https://roads.googleapis.com/v1/snapToRoads", {
       params
     })
-    .then(function({ data: snappedPoints }) {
+    .then(function({ data: { snappedPoints } }) {
       processSnapToRoadResponse(snappedPoints);
       drawSnappedPolyline();
     });
@@ -109,11 +108,12 @@ export let processSnapToRoadResponse = function(snappedPoints) {
 
 // Draws the snapped polyline (after processing snap-to-road response).
 export let drawSnappedPolyline = function(
+  path = snappedCoordinates,
   strokeColor = "black",
   strokeWeight = 3
 ) {
   let snappedPolyline = new google.maps.Polyline({
-    path: snappedCoordinates,
+    path,
     strokeColor,
     strokeWeight
   });

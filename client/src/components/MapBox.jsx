@@ -1,27 +1,22 @@
 import React, { useState, useEffect } from "react";
-import {
-  initializeMap,
-  drawSnappedPolyline,
-  processSnapToRoadResponse,
-  runSnapToRoad
-} from "./initializeMap.js";
+import PathMap from "../PathMap.js";
+import axios from "axios";
 
-export default () => {
+export default ({ mapId }) => {
+  let [polylines, setPolylines] = useState([]);
+  let [currMap, setCurrMap] = useState({});
   useEffect(() => {
-    initializeMap();
-  }, []);
+    setCurrMap(new PathMap());
+  }, [mapId]);
   return (
     <React.Fragment>
       <div id="map"></div>
       <div id="bar">
-        <p className="auto">
-          <input type="text" id="autoc" />
-        </p>
         <p>
           <a id="clear" href="#">
             Click here
           </a>{" "}
-          to clear map.
+          to clear the map.
         </p>
       </div>
     </React.Fragment>
