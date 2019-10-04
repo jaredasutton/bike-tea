@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
-import PathMap from "../PathMap.js";
+
 import axios from "axios";
 
-export default ({ mapId }) => {
-  let [polylines, setPolylines] = useState([]);
-  let [currMap, setCurrMap] = useState({});
-  useEffect(() => {
-    setCurrMap(new PathMap());
-  }, []);
+export default () => {
   return (
     <React.Fragment>
       <div id="map"></div>

@@ -1,12 +1,13 @@
 import axios from "axios";
 import apiKey from "../../config.js";
-let map;
-let placeIdArray = [];
-let polylines = [];
-let snappedCoordinates = [];
 
 export default class PathMap {
-  constructor() {
+  constructor({
+    editingRoute,
+    setEditingRoute,
+    snappedPoints = [],
+    setSnappedPoints = () => {}
+  }) {
     this.map;
     this.placeIdArray = [];
     this.polylines = [];
@@ -15,7 +16,17 @@ export default class PathMap {
     this.newPLStrokeColor = "green";
     this.newPLEndpointX = null;
     this.newPLEndpointY = null;
-    this.editingRoute = false;
+    this.editingRoute = editingRoute;
+    this.setEditingRoute = route => {
+      this.editingRoute = route;
+      setEditingRoute(route);
+    };
+    this.snappedPoints = snappedPoints;
+    this.setSnappedPoints = snappedPoints => {
+      this.snappedPoints = snappedPoints;
+      setSnappedPoints(snappedPoints);
+    };
+
     let google = window.google;
 
     let mapOptions = {
@@ -26,16 +37,17 @@ export default class PathMap {
     document.getElementById("map").innerHTML = "";
     this.map = new google.maps.Map(document.getElementById("map"), mapOptions);
     google.maps.event.addDomListener(this.map.getDiv(), "click", e => {
-      if (this.editingRoute) {
+      if (this.editingRoute && this.lastClickedEditingRoute) {
         this.newPLEndpointX = e.clientX;
         this.newPLEndpointY = e.clientY;
         let newRouteDescription = document.getElementById(
           "new-route-description"
         );
-        newRouteDescription.style.display = "inherit";
         newRouteDescription.style.top = this.newPLEndpointY + "px";
         newRouteDescription.style.left = this.newPLEndpointX + "px";
-        this.editingRoute = false;
+        this.lastClickedEditingRoute = false;
+      } else {
+        this.setEditingRoute(null);
       }
     });
     // Adds a Places search box. Searching for a place will center the map on that
@@ -89,25 +101,36 @@ export default class PathMap {
       key: apiKey,
       path: pathValues.join("|")
     };
-    console.log(params);
 
     axios
       .get("https://roads.googleapis.com/v1/snapToRoads", {
         params
       })
       .then(({ data: { snappedPoints } }) => {
-        this.processSnapToRoadResponse(snappedPoints);
         this.polylines[this.polylines.length - 1].setOptions({
           strokeWeight: 0
         });
-        this.drawSnappedPolyline();
         this.newPLSnappedPoints = snappedPoints;
+        let newSnappedPointsIndex = this.snappedPoints.length;
+        let newPath = {
+          description: "",
+          snappedPoints,
+          strokeColor: this.newPLStrokeColor,
+          strokeWeight: 5
+        };
+        this.setSnappedPoints(this.snappedPoints.concat(newPath));
+        this.drawSnappedPolyline(
+          this.processSnapToRoadResponse(newPath.snappedPoints),
+          newPath.strokeColor,
+          newPath.strokeWeight,
+          newSnappedPointsIndex
+        );
       });
   }
   // Store snapped polyline returned by the snap-to-road service.
   processSnapToRoadResponse(snappedPoints) {
     this.snappedCoordinates = [];
-    debugger;
+    // debugger;
     this.placeIdArray = [];
     for (let i = 0; i < snappedPoints.length; i++) {
       let latlng = new google.maps.LatLng(
@@ -117,12 +140,14 @@ export default class PathMap {
       this.snappedCoordinates.push(latlng);
       this.placeIdArray.push(snappedPoints[i].placeId);
     }
+    return this.snappedCoordinates;
   }
   // Draws the snapped polyline (after processing snap-to-road response).
   drawSnappedPolyline(
-    path = this.snappedCoordinates,
+    path = [],
     strokeColor = this.newPLStrokeColor,
-    strokeWeight = 5
+    strokeWeight = 5,
+    snappedPointIndex
   ) {
     let snappedPolyline = new google.maps.Polyline({
       path,
@@ -135,7 +160,8 @@ export default class PathMap {
     snappedPolyline.addListener("click", e => {
       snappedPolyline.setOptions({ strokeColor: "blue" });
       this.newPLStrokeColor = "blue";
-      this.editingRoute = true;
+      this.setEditingRoute({ polyline: snappedPolyline, snappedPointIndex });
+      this.lastClickedEditingRoute = true;
     });
 
     this.polylines.push(snappedPolyline);
