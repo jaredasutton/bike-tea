@@ -7,7 +7,7 @@ export default ({ mapId }) => {
   let [currMap, setCurrMap] = useState({});
   useEffect(() => {
     setCurrMap(new PathMap());
-  }, [mapId]);
+  }, []);
   return (
     <React.Fragment>
       <div id="map"></div>

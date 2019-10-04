@@ -13,7 +13,11 @@ export default class PathMap {
     this.snappedCoordinates = [];
     this.newPLSnappedPoints = [];
     this.newPLStrokeColor = "green";
+    this.newPLEndpointX = null;
+    this.newPLEndpointY = null;
+    this.editingRoute = false;
     let google = window.google;
+
     let mapOptions = {
       zoom: 12,
       center: { lat: 40.7081, lng: -73.9571 },
@@ -21,7 +25,19 @@ export default class PathMap {
     };
     document.getElementById("map").innerHTML = "";
     this.map = new google.maps.Map(document.getElementById("map"), mapOptions);
-
+    google.maps.event.addDomListener(this.map.getDiv(), "click", e => {
+      if (this.editingRoute) {
+        this.newPLEndpointX = e.clientX;
+        this.newPLEndpointY = e.clientY;
+        let newRouteDescription = document.getElementById(
+          "new-route-description"
+        );
+        newRouteDescription.style.display = "inherit";
+        newRouteDescription.style.top = this.newPLEndpointY + "px";
+        newRouteDescription.style.left = this.newPLEndpointX + "px";
+        this.editingRoute = false;
+      }
+    });
     // Adds a Places search box. Searching for a place will center the map on that
     // location.
     this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(
@@ -106,7 +122,7 @@ export default class PathMap {
   drawSnappedPolyline(
     path = this.snappedCoordinates,
     strokeColor = this.newPLStrokeColor,
-    strokeWeight = 3
+    strokeWeight = 5
   ) {
     let snappedPolyline = new google.maps.Polyline({
       path,
@@ -116,10 +132,12 @@ export default class PathMap {
     //snappedPolyline.click
 
     snappedPolyline.setMap(this.map);
-    snappedPolyline.addListener("click", () => {
+    snappedPolyline.addListener("click", e => {
       snappedPolyline.setOptions({ strokeColor: "blue" });
       this.newPLStrokeColor = "blue";
+      this.editingRoute = true;
     });
+
     this.polylines.push(snappedPolyline);
   }
 }

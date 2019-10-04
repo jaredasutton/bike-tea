@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MapBox from "./MapBox.jsx";
 import MapList from "./MapList.jsx";
+import CreateMap from "./CreateMap.jsx";
 
 export default () => {
   const [view, setView] = useState("CREATE_MAP");
@@ -18,7 +19,11 @@ export default () => {
   } else if (view === "SINGLE_MAP") {
     body = <MapBox mapId={currMapId} />;
   } else if (view === "CREATE_MAP") {
-    body = <MapBox mapId={null} />;
+    body = (
+      <CreateMap>
+        <MapBox mapId={null} />
+      </CreateMap>
+    );
   }
   return <React.Fragment>{body}</React.Fragment>;
 };
