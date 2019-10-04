@@ -5,6 +5,7 @@ const path = require("path");
 const pathmapsRouter = require("./routes/pathmaps.js");
 const app = express();
 
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("combined"));
 app.use(

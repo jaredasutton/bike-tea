@@ -7,9 +7,27 @@ const retrieveById = _id => {
 };
 
 const retrieveAllForUserId = userId => {
-  return PathMap.find({ userId })
+  console.log(userId);
+  return PathMap.find({ userId: Number(userId) })
     .then(docs => docs)
     .catch(console.error);
 };
 
-module.exports = { retrieveById, retrieveAllForUserId };
+const insertPathMap = (newPathMap, _id) => {
+  let updateCondition = { zoom: 100000000 };
+  if (_id) {
+    updateCondition = { _id };
+  }
+  return PathMap.findOneAndUpdate(
+    updateCondition,
+    { $set: newPathMap },
+    {
+      upsert: true,
+      returnNewDocument: true
+    }
+  )
+    .then(doc => doc)
+    .catch(console.error);
+};
+
+module.exports = { retrieveById, retrieveAllForUserId, insertPathMap };

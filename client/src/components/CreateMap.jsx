@@ -1,26 +1,32 @@
 import React, { useState, useEffect } from "react";
 import NewMapNameField from "./NewMapNameField.jsx";
-import RouteDescription from "./RouteDescription.jsx";
+import NewRouteDescription from "./NewRouteDescription.jsx";
+import NewMapSubmitButton from "./NewMapSubmitButton.jsx";
 
 export default ({
   editingRoute,
   setEditingRoute,
   snappedPoints,
-  setSnappedPoints
+  setSnappedPoints,
+  submitNewMap,
+  newMapName,
+  setNewMapName
 }) => {
-  const [mapName, setMapName] = useState("");
-  const [routeDescLoc, setRouteDescLoc] = useState([0, 0]);
+  //const [routeDescLoc, setRouteDescLoc] = useState([0, 0]);
   const [routeDesc, setRouteDesc] = useState("");
   const [routeColor, setRouteColor] = useState("green");
 
   return (
     <div className="create-map-container">
-      <NewMapNameField
-        mapName={mapName}
-        onChange={e => setMapName(e.target.value)}
-      />
+      <h2 className="new-map-panel">
+        <NewMapNameField
+          mapName={newMapName}
+          onChange={e => setNewMapName(e.target.value)}
+        />
+        <NewMapSubmitButton submitAction={submitNewMap} />
+      </h2>
 
-      <RouteDescription
+      <NewRouteDescription
         visible={editingRoute !== null ? "visible" : "invisible"}
         route={editingRoute}
         description={

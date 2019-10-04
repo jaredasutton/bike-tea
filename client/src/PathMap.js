@@ -6,7 +6,10 @@ export default class PathMap {
     editingRoute,
     setEditingRoute,
     snappedPoints = [],
-    setSnappedPoints = () => {}
+    setSnappedPoints = () => {},
+    editingMap,
+    viewingDesc,
+    setViewingDesc
   }) {
     this.map;
     this.placeIdArray = [];
@@ -26,69 +29,88 @@ export default class PathMap {
       this.snappedPoints = snappedPoints;
       setSnappedPoints(snappedPoints);
     };
+    this.viewingDesc = viewingDesc;
+    this.setViewingDesc = route => {
+      this.viewingDesc = route;
+      setViewingDesc(route);
+    };
+    this.editingMap = editingMap;
 
     let google = window.google;
 
     let mapOptions = {
       zoom: 12,
       center: { lat: 40.7081, lng: -73.9571 },
-      minZoom: 12
+      minZoom: 12,
+      draggableCursor: "move"
     };
     document.getElementById("map").innerHTML = "";
+    console.log("this.editingMap", this.editingMap);
     this.map = new google.maps.Map(document.getElementById("map"), mapOptions);
-    google.maps.event.addDomListener(this.map.getDiv(), "click", e => {
-      if (this.editingRoute && this.lastClickedEditingRoute) {
-        this.newPLEndpointX = e.clientX;
-        this.newPLEndpointY = e.clientY;
-        let newRouteDescription = document.getElementById(
-          "new-route-description"
-        );
-        newRouteDescription.style.top = this.newPLEndpointY + "px";
-        newRouteDescription.style.left = this.newPLEndpointX + "px";
-        this.lastClickedEditingRoute = false;
-      } else {
-        this.setEditingRoute(null);
-      }
-    });
-    // Adds a Places search box. Searching for a place will center the map on that
-    // location.
-    this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(
-      document.getElementById("bar")
-    );
+    if (this.editingMap) {
+      google.maps.event.addDomListener(this.map.getDiv(), "click", e => {
+        if (this.editingRoute && this.lastClickedEditingRoute) {
+          this.newPLEndpointX = e.clientX;
+          this.newPLEndpointY = e.clientY;
+          let newRouteDescription = document.getElementById(
+            "new-route-description"
+          );
+          newRouteDescription.style.top = this.newPLEndpointY + "px";
+          newRouteDescription.style.left = this.newPLEndpointX + "px";
+          this.lastClickedEditingRoute = false;
+        } else if (this.editingRoute && !this.lastClickedEditingRoute) {
+          console.log("resetting editingRoute to null");
+          this.setEditingRoute(null);
+        }
+      });
+    } else {
+      google.maps.event.addDomListener(this.map.getDiv(), "mousemove", e => {
+        let routeDescription = document.getElementById("route-description");
+        routeDescription.style.top = e.clientY + "px";
+        routeDescription.style.left = e.clientX + "px";
+      });
+    }
+    if (this.editingMap) {
+      // Adds a Places search box. Searching for a place will center the map on that
+      // location.
+      this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(
+        document.getElementById("bar")
+      );
 
-    // Enables the polyline drawing control. Click on the map to start drawing a
-    // polyline. Each click will add a new vertice. Double-click to stop drawing.
-    let drawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: google.maps.drawing.OverlayType.POLYLINE,
-      drawingControl: true,
-      drawingControlOptions: {
-        position: google.maps.ControlPosition.TOP_CENTER,
-        drawingModes: [google.maps.drawing.OverlayType.POLYLINE]
-      },
-      polylineOptions: {
-        strokeColor: "#696969",
-        strokeWeight: 2
-      }
-    });
-    drawingManager.setMap(this.map);
+      // Enables the polyline drawing control. Click on the map to start drawing a
+      // polyline. Each click will add a new vertice. Double-click to stop drawing.
+      let drawingManager = new google.maps.drawing.DrawingManager({
+        drawingMode: google.maps.drawing.OverlayType.POLYLINE,
+        drawingControl: this.editingMap,
+        drawingControlOptions: {
+          position: google.maps.ControlPosition.TOP_CENTER,
+          drawingModes: [google.maps.drawing.OverlayType.POLYLINE]
+        },
+        polylineOptions: {
+          strokeColor: "#696969",
+          strokeWeight: 2
+        }
+      });
+      drawingManager.setMap(this.map);
 
-    // Snap-to-road when the polyline is completed.
-    drawingManager.addListener("polylinecomplete", poly => {
-      let path = poly.getPath();
-      this.polylines.push(poly);
-      this.placeIdArray = [];
-      this.runSnapToRoad(path);
-    });
+      // Snap-to-road when the polyline is completed.
+      drawingManager.addListener("polylinecomplete", poly => {
+        let path = poly.getPath();
+        this.polylines.push(poly);
+        this.placeIdArray = [];
+        this.runSnapToRoad(path);
+      });
 
-    // Clear button. Click to remove all polylines.
-    document.getElementById("clear").addEventListener("click", ev => {
-      for (let i = 0; i < this.polylines.length; ++i) {
-        this.polylines[i].setMap(null);
-      }
-      this.polylines = [];
-      ev.preventDefault();
-      return false;
-    });
+      // Clear button. Click to remove all polylines.
+      this.clear = () => {
+        for (let i = 0; i < this.polylines.length; ++i) {
+          this.polylines[i].setMap(null);
+        }
+        this.polylines = [];
+        ev.preventDefault();
+        return false;
+      };
+    }
   }
   // Snap a user-created polyline to roads and draw the snapped path
   runSnapToRoad(path) {
@@ -158,10 +180,19 @@ export default class PathMap {
 
     snappedPolyline.setMap(this.map);
     snappedPolyline.addListener("click", e => {
-      snappedPolyline.setOptions({ strokeColor: "blue" });
-      this.newPLStrokeColor = "blue";
+      //snappedPolyline.setOptions({ strokeColor: "blue" });
+      //this.newPLStrokeColor = "blue";
+      snappedPolyline.setOptions({ strokeWeight: 7 });
+
       this.setEditingRoute({ polyline: snappedPolyline, snappedPointIndex });
       this.lastClickedEditingRoute = true;
+    });
+
+    snappedPolyline.addListener("mouseover", e => {
+      this.setViewingDesc({ polyline: snappedPolyline, snappedPointIndex });
+    });
+    snappedPolyline.addListener("mouseout", e => {
+      this.setViewingDesc(null);
     });
 
     this.polylines.push(snappedPolyline);

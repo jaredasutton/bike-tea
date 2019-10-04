@@ -2,7 +2,7 @@ const { Schema } = require("mongoose");
 
 module.exports = new Schema({
   name: String,
-  userId: Number,
+  userId: { type: Number, default: 5 },
   private: { type: Boolean, default: false },
   zoom: { type: Number, default: 12 },
   paths: [

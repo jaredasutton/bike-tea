@@ -1,3 +1,8 @@
+/* body {
+  background: url("https://cdn.pixabay.com/photo/2015/02/23/19/37/new-york-646426_960_720.jpg");
+  background-size: fill;
+} */
+
 #app {
   width: 80%;
   height: 600px;
@@ -10,6 +15,7 @@ body,
   height: 100%;
   margin: 0px;
   padding: 0px;
+  font-family: "Roboto", sans-serif;
 }
 
 #panel {
@@ -36,10 +42,20 @@ body,
   box-sizing: border-box;
 }
 
+.new-map-panel {
+  margin-bottom: 20px;
+}
+
+.new-map-panel > * {
+  font-size: 20px;
+}
+
 .map-list {
   display: grid;
   grid-template-columns: auto auto auto;
   padding: 10px;
+  column-gap: 10px;
+  row-gap: 10px;
 }
 
 .map-list-item {
@@ -55,6 +71,12 @@ body,
   margin: 0 auto;
 }
 
+.view-description-container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.route-description,
 .new-route-description {
   position: absolute;
   z-index: 1000000000000000;
@@ -94,4 +116,9 @@ body,
 
 .visible {
   display: inherit;
+}
+
+.map-box-container {
+  height: 600px;
+  width: 100%;
 }

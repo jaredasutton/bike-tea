@@ -1,38 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-export default ({
-  mapName,
-  changeRouteDesc,
-  changeRouteColor,
-  visible,
-  description,
-  color
-}) => {
+export default ({ visible, description, color }) => {
   return (
-    <div
-      id="new-route-description"
-      className={"new-route-description " + visible}
-    >
-      <div className="new-route-description-colors">
-        <button
-          className=" new-route-description-red"
-          onClick={() => changeRouteColor("red")}
-        />
-        <button
-          className=" new-route-description-yellow"
-          onClick={() => changeRouteColor("yellow")}
-        />
-        <button
-          className=" new-route-description-green"
-          onClick={() => changeRouteColor("green")}
-        />
+    <div className="view-description-container">
+      <div id="route-description" className={"route-description " + visible}>
+        <p>{description}</p>
       </div>
-      <br />
-      <input
-        value={description}
-        onChange={changeRouteDesc}
-        className="new-route-description-field"
-      ></input>
     </div>
   );
 };

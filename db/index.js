@@ -5,7 +5,8 @@ connect(
   "mongodb://localhost:27017/bike_tea",
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
   }
 );
 

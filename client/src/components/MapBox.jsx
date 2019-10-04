@@ -2,19 +2,11 @@ import React, { useState, useEffect } from "react";
 
 import axios from "axios";
 
-export default () => {
+export default ({ visible }) => {
   return (
-    <React.Fragment>
+    <div className={"map-box-container " + visible}>
       <div id="map"></div>
-      <div id="bar">
-        <p>
-          <a id="clear" href="#">
-            Click here
-          </a>{" "}
-          to clear the map.
-        </p>
-      </div>
-    </React.Fragment>
+    </div>
   );
 };
 
