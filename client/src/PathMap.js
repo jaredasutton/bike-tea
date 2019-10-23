@@ -45,7 +45,7 @@ export default class PathMap {
       draggableCursor: "move"
     };
     document.getElementById("map").innerHTML = "";
-    console.log("this.editingMap", this.editingMap);
+
     this.map = new google.maps.Map(document.getElementById("map"), mapOptions);
     if (this.editingMap) {
       google.maps.event.addDomListener(this.map.getDiv(), "click", e => {
@@ -59,7 +59,6 @@ export default class PathMap {
           newRouteDescription.style.left = this.newPLEndpointX + "px";
           this.lastClickedEditingRoute = false;
         } else if (this.editingRoute && !this.lastClickedEditingRoute) {
-          console.log("resetting editingRoute to null");
           this.setEditingRoute(null);
         }
       });

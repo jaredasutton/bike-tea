@@ -19,6 +19,7 @@ export default ({
   return (
     <div className="create-map-container">
       <h2 className="new-map-panel">
+        <span>New Map Name: </span>
         <NewMapNameField
           mapName={newMapName}
           onChange={e => setNewMapName(e.target.value)}
@@ -52,6 +53,7 @@ export default ({
           setSnappedPoints(newSP);
           editingRoute.polyline.setOptions({ strokeColor: color });
         }}
+        confirmOrExit={() => setEditingRoute(null)}
       />
     </div>
   );

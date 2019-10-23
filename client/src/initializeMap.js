@@ -79,7 +79,6 @@ export let runSnapToRoad = function(path) {
     key: apiKey,
     path: pathValues.join("|")
   };
-  console.log(params);
 
   axios
     .get("https://roads.googleapis.com/v1/snapToRoads", {

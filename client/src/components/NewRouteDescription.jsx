@@ -6,13 +6,16 @@ export default ({
   changeRouteColor,
   visible,
   description,
-  color
+  color,
+  confirmOrExit
 }) => {
   return (
     <div
       id="new-route-description"
       className={"route-description new-route-description " + visible}
     >
+      {" "}
+      <div className="rd-heading">Safety Rating</div>
       <div className="new-route-description-colors">
         <button
           className=" new-route-description-red"
@@ -28,11 +31,15 @@ export default ({
         />
       </div>
       <br />
-      <input
+      <div>Description</div>
+      <br />
+      <textarea
         value={description}
         onChange={changeRouteDesc}
         className="new-route-description-field"
-      ></input>
+      ></textarea>
+      <br />
+      <button onClick={confirmOrExit}>Confirm</button>
     </div>
   );
 };

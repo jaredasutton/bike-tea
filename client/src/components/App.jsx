@@ -13,7 +13,6 @@ export default () => {
   const [currMapId, setCurrMapId] = useState(0);
   const [currMap, setCurrMap] = useState({});
   const [currMapData, setCurrMapData] = useState({ _id: null });
-  const [polylines, setPolylines] = useState([]);
   const [editingRoute, setEditingRoute] = useState(null);
   const [snappedPoints, setSnappedPoints] = useState([]);
   const [newMapName, setNewMapName] = useState("");
@@ -23,7 +22,10 @@ export default () => {
     let postObj = { name: newMapName, paths: snappedPoints };
     axios
       .post("/pathmaps", postObj)
-      .then(console.log)
+      .then(() => {
+        setView("HOME");
+        setEditingMap(false);
+      })
       .catch(console.error);
   };
   let body;
@@ -70,7 +72,6 @@ export default () => {
     );
   }
   useEffect(() => {
-    console.log("useEffect called");
     let newPM = new PathMap({
       editingRoute,
       setEditingRoute,
@@ -95,11 +96,12 @@ export default () => {
     axios.get(`/pathmaps?userId=${5}`).then(({ data }) => setMapList(data));
     //setView("HOME");
   }, [currMapData._id, view, editingMap]);
-  console.log(editingRoute);
-  console.log("rendering App");
   return (
     <React.Fragment>
-      <h1 onClick={() => setView("HOME")}>Bike Tea</h1>
+      <div className={"app-header"} onClick={() => setView("HOME")}>
+        Bike <img src="/public/biketea1.png" height="30px" />
+        Tea
+      </div>
       {body}
       <MapBox visible={view === "HOME" ? "invisible" : "visible"} />
       <RouteDescription

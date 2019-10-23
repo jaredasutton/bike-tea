@@ -1,8 +1,8 @@
 const { connect, model, connection } = require("mongoose");
 const PathMapSchema = require("./PathMapSchema.js");
-
+console.log(`mongodb://${"localhost" && process.env.MONGOADDR}/bike_tea`);
 connect(
-  "mongodb://localhost:27017/bike_tea",
+  `mongodb://${"localhost" && process.env.MONGOADDR}/bike_tea`,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,

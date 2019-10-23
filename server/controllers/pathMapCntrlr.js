@@ -32,7 +32,7 @@ const getAllForUserId = (req, res) => {
 
 const postNewPathMap = (req, res) => {
   let newPathMap = req.body;
-  console.log(newPathMap);
+
   if (newPathMap === undefined) {
     return res.status(401);
   }

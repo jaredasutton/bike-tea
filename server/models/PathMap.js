@@ -7,7 +7,6 @@ const retrieveById = _id => {
 };
 
 const retrieveAllForUserId = userId => {
-  console.log(userId);
   return PathMap.find({ userId: Number(userId) })
     .then(docs => docs)
     .catch(console.error);
