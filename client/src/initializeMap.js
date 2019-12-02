@@ -1,5 +1,5 @@
-import axios from "axios";
-import apiKey from "../../config.js";
+import axios from 'axios';
+const apiKey = process.env.MAPS_KEY;
 let map;
 let placeIdArray = [];
 let polylines = [];
@@ -12,26 +12,13 @@ export let initializeMap = function() {
     center: { lat: 40.7081, lng: -73.9571 },
     minZoom: 12
   };
-  map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
   // Adds a Places search box. Searching for a place will center the map on that
   // location.
   map.controls[google.maps.ControlPosition.RIGHT_TOP].push(
-    document.getElementById("bar")
+    document.getElementById('bar')
   );
-  // let autocomplete = new google.maps.places.Autocomplete(
-  //   document.getElementById("autoc")
-  // );
-  // autocomplete.bindTo("bounds", map);
-  // autocomplete.addListener("place_changed", function() {
-  //   let place = autocomplete.getPlace();
-  //   if (place.geometry.viewport) {
-  //     map.fitBounds(place.geometry.viewport);
-  //   } else {
-  //     map.setCenter(place.geometry.location);
-  //     map.setZoom(17);
-  //   }
-  // });
 
   // Enables the polyline drawing control. Click on the map to start drawing a
   // polyline. Each click will add a new vertice. Double-click to stop drawing.
@@ -43,14 +30,14 @@ export let initializeMap = function() {
       drawingModes: [google.maps.drawing.OverlayType.POLYLINE]
     },
     polylineOptions: {
-      strokeColor: "#696969",
+      strokeColor: '#696969',
       strokeWeight: 2
     }
   });
   drawingManager.setMap(map);
 
   // Snap-to-road when the polyline is completed.
-  drawingManager.addListener("polylinecomplete", function(poly) {
+  drawingManager.addListener('polylinecomplete', function(poly) {
     let path = poly.getPath();
     polylines.push(poly);
     placeIdArray = [];
@@ -58,7 +45,7 @@ export let initializeMap = function() {
   });
 
   // Clear button. Click to remove all polylines.
-  document.getElementById("clear").addEventListener("click", function(ev) {
+  document.getElementById('clear').addEventListener('click', function(ev) {
     for (let i = 0; i < polylines.length; ++i) {
       polylines[i].setMap(null);
     }
@@ -77,11 +64,11 @@ export let runSnapToRoad = function(path) {
   let params = {
     interpolate: true,
     key: apiKey,
-    path: pathValues.join("|")
+    path: pathValues.join('|')
   };
 
   axios
-    .get("https://roads.googleapis.com/v1/snapToRoads", {
+    .get('https://roads.googleapis.com/v1/snapToRoads', {
       params
     })
     .then(function({ data: { snappedPoints } }) {
@@ -108,7 +95,7 @@ export let processSnapToRoadResponse = function(snappedPoints) {
 // Draws the snapped polyline (after processing snap-to-road response).
 export let drawSnappedPolyline = function(
   path = snappedCoordinates,
-  strokeColor = "black",
+  strokeColor = 'black',
   strokeWeight = 3
 ) {
   let snappedPolyline = new google.maps.Polyline({

@@ -1,5 +1,5 @@
-import axios from "axios";
-import apiKey from "../../config.js";
+import axios from 'axios';
+const apiKey = process.env.MAPS_KEY;
 
 export default class PathMap {
   constructor({
@@ -16,7 +16,7 @@ export default class PathMap {
     this.polylines = [];
     this.snappedCoordinates = [];
     this.newPLSnappedPoints = [];
-    this.newPLStrokeColor = "green";
+    this.newPLStrokeColor = 'green';
     this.newPLEndpointX = null;
     this.newPLEndpointY = null;
     this.editingRoute = editingRoute;
@@ -42,38 +42,38 @@ export default class PathMap {
       zoom: 12,
       center: { lat: 40.7081, lng: -73.9571 },
       minZoom: 12,
-      draggableCursor: "move"
+      draggableCursor: 'move'
     };
-    document.getElementById("map").innerHTML = "";
+    document.getElementById('map').innerHTML = '';
 
-    this.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    this.map = new google.maps.Map(document.getElementById('map'), mapOptions);
     if (this.editingMap) {
-      google.maps.event.addDomListener(this.map.getDiv(), "click", e => {
+      google.maps.event.addDomListener(this.map.getDiv(), 'click', e => {
         if (this.editingRoute && this.lastClickedEditingRoute) {
           this.newPLEndpointX = e.clientX;
           this.newPLEndpointY = e.clientY;
           let newRouteDescription = document.getElementById(
-            "new-route-description"
+            'new-route-description'
           );
-          newRouteDescription.style.top = this.newPLEndpointY + "px";
-          newRouteDescription.style.left = this.newPLEndpointX + "px";
+          newRouteDescription.style.top = this.newPLEndpointY + 'px';
+          newRouteDescription.style.left = this.newPLEndpointX + 'px';
           this.lastClickedEditingRoute = false;
         } else if (this.editingRoute && !this.lastClickedEditingRoute) {
           this.setEditingRoute(null);
         }
       });
     } else {
-      google.maps.event.addDomListener(this.map.getDiv(), "mousemove", e => {
-        let routeDescription = document.getElementById("route-description");
-        routeDescription.style.top = e.clientY + "px";
-        routeDescription.style.left = e.clientX + "px";
+      google.maps.event.addDomListener(this.map.getDiv(), 'mousemove', e => {
+        let routeDescription = document.getElementById('route-description');
+        routeDescription.style.top = e.clientY + 'px';
+        routeDescription.style.left = e.clientX + 'px';
       });
     }
     if (this.editingMap) {
       // Adds a Places search box. Searching for a place will center the map on that
       // location.
       this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(
-        document.getElementById("bar")
+        document.getElementById('bar')
       );
 
       // Enables the polyline drawing control. Click on the map to start drawing a
@@ -86,14 +86,14 @@ export default class PathMap {
           drawingModes: [google.maps.drawing.OverlayType.POLYLINE]
         },
         polylineOptions: {
-          strokeColor: "#696969",
+          strokeColor: '#696969',
           strokeWeight: 2
         }
       });
       drawingManager.setMap(this.map);
 
       // Snap-to-road when the polyline is completed.
-      drawingManager.addListener("polylinecomplete", poly => {
+      drawingManager.addListener('polylinecomplete', poly => {
         let path = poly.getPath();
         this.polylines.push(poly);
         this.placeIdArray = [];
@@ -120,11 +120,11 @@ export default class PathMap {
     let params = {
       interpolate: true,
       key: apiKey,
-      path: pathValues.join("|")
+      path: pathValues.join('|')
     };
 
     axios
-      .get("https://roads.googleapis.com/v1/snapToRoads", {
+      .get('https://roads.googleapis.com/v1/snapToRoads', {
         params
       })
       .then(({ data: { snappedPoints } }) => {
@@ -134,7 +134,7 @@ export default class PathMap {
         this.newPLSnappedPoints = snappedPoints;
         let newSnappedPointsIndex = this.snappedPoints.length;
         let newPath = {
-          description: "",
+          description: '',
           snappedPoints,
           strokeColor: this.newPLStrokeColor,
           strokeWeight: 5
@@ -178,7 +178,7 @@ export default class PathMap {
     //snappedPolyline.click
 
     snappedPolyline.setMap(this.map);
-    snappedPolyline.addListener("click", e => {
+    snappedPolyline.addListener('click', e => {
       //snappedPolyline.setOptions({ strokeColor: "blue" });
       //this.newPLStrokeColor = "blue";
       snappedPolyline.setOptions({ strokeWeight: 7 });
@@ -187,10 +187,10 @@ export default class PathMap {
       this.lastClickedEditingRoute = true;
     });
 
-    snappedPolyline.addListener("mouseover", e => {
+    snappedPolyline.addListener('mouseover', e => {
       this.setViewingDesc({ polyline: snappedPolyline, snappedPointIndex });
     });
-    snappedPolyline.addListener("mouseout", e => {
+    snappedPolyline.addListener('mouseout', e => {
       this.setViewingDesc(null);
     });
 

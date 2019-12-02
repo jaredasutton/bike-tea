@@ -17,13 +17,14 @@ body {
 .app-header {
   /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.4); */
   padding: 2px;
-  font-family: "Modak", cursive;
+  font-family: 'Modak', cursive;
   font-size: 40px;
   text-align: center;
   background: white;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
   width: 100%;
+  cursor: pointer;
 }
 
 html,
@@ -32,7 +33,7 @@ body,
   height: 100%;
   margin: 0px;
   padding: 0px;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 #panel {
